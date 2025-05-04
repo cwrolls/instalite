@@ -1,0 +1,12 @@
+{
+    "database": {
+      "host": "localhost",
+      "port": "3306",
+      "database": "imdb_basic"
+    },
+    "groupId": "nets-2120-JCPP",
+    "bootstrapServers": ["localhost:9092"],
+    "topic": "Bluesky-Kafka",
+    "federatedTopic": "FederatedPosts",
+    "port": 4567
+}
