@@ -1,0 +1,17 @@
+---
+:id: 331467501
+:submitters:
+- :name: Claire Wu
+  :email: clwu@wharton.upenn.edu
+- :name: Pragya Singh
+  :email: pragya7@wharton.upenn.edu
+- :name: Jingyi Zhao
+  :email: zhao3@sas.upenn.edu
+- :name: Pulkith Paruchuri
+  :email: pulkith@wharton.upenn.edu
+:created_at: !ruby/object:ActiveSupport::TimeWithZone
+  utc: 2025-05-06 03:43:23.931359000 Z
+  zone: !ruby/object:ActiveSupport::TimeZone
+    name: America/Los_Angeles
+  time: 2025-05-05 20:43:23.931359000 Z
+:status: processed
