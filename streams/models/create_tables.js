@@ -1,6 +1,4 @@
 import { get_db_connection, RelationalDB } from '../models/rdbms.js';
-
-// Database connection setup
 const dbaccess = get_db_connection();
 
 function sendQueryOrCommand(db, query, params = []) {
@@ -17,11 +15,6 @@ function sendQueryOrCommand(db, query, params = []) {
 
 async function create_tables() {
 
-  /**
-   * These should exist from HW2 and 3
-   */
-
-  // Note here that birth/death year should really be int but have often been put as string
   await dbaccess.create_tables('CREATE TABLE IF NOT EXISTS names ( \
     nconst VARCHAR(255) UNIQUE, \
     primaryName VARCHAR(255), \
@@ -38,9 +31,7 @@ async function create_tables() {
       FOREIGN KEY (recommendation) REFERENCES names(nconst) \
       );')
   
-    /**
-     * This should also exist from HW3
-     */
+
   await dbaccess.create_tables('CREATE TABLE IF NOT EXISTS friends ( \
     followed VARCHAR(255), \
     follower VARCHAR(255), \
@@ -48,7 +39,6 @@ async function create_tables() {
     FOREIGN KEY (followed) REFERENCES names(nconst) \
     );')
 
-    // Create users table
     await dbaccess.create_tables('CREATE TABLE IF NOT EXISTS users ( \
     user_id INT NOT NULL AUTO_INCREMENT, \
     username VARCHAR(255), \
@@ -61,7 +51,6 @@ async function create_tables() {
     FOREIGN KEY (linked_nconst) REFERENCES names(nconst) \
     );')
 
-    // Create posts table
     await dbaccess.create_tables('CREATE TABLE IF NOT EXISTS posts ( \
     post_id INT NOT NULL AUTO_INCREMENT, \
     parent_post INT, \
@@ -73,7 +62,6 @@ async function create_tables() {
     FOREIGN KEY (author_id) REFERENCES users(user_id) \
     );')
 
-    // Create federated_posts table
     await dbaccess.create_tables('CREATE TABLE IF NOT EXISTS federated_posts ( \
     post_id INT NOT NULL AUTO_INCREMENT, \
     username VARCHAR(255) NOT NULL, \
@@ -121,8 +109,6 @@ async function create_tables() {
     FOREIGN KEY (author_did) REFERENCES Bluesky_authors(did) \
     );')
 
-
-    //ignore viewer data for now
 
     return null;
 }

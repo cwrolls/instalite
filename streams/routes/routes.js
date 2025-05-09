@@ -25,7 +25,7 @@ async function getVectorStore() {
     if (vectorStore == null) {
         vectorStore = await Chroma.fromExistingCollection(new OpenAIEmbeddings(), {
             collectionName: "imdb_reviews2",
-            url: "http://localhost:8000", // Optional, will default to this value
+            url: "http://localhost:8000",
             });
     } else
         console.log('Vector store already initialized');
@@ -36,8 +36,7 @@ function getMesages(req, res) {
     res.status(200).send(JSON.stringify(kafka_messages));
 }
 
-
-// POST Message to Kafka 
+// post msg to kafka
 async function postMessage(p,c,req, res) {
     try {
         const { post_json, attach } = req.body;
@@ -48,11 +47,8 @@ async function postMessage(p,c,req, res) {
         });
         }
 
-        // Generate UUID if not provided
-        //const messageUUID = post_json.post_uuid_within_site || uuidv4();
         const messageUUID = uuidv4();
         
-        // Construct the formatted message
         const formattedMessage = {
         post_json: {
             username: post_json.username,
@@ -63,7 +59,6 @@ async function postMessage(p,c,req, res) {
         }
         };
 
-        // Add attachment if provided
         if (attach) {
         formattedMessage.attach = attach;
         }
@@ -83,8 +78,6 @@ async function postMessage(p,c,req, res) {
     }
 }
 
-/* Here we construct an object that contains a field for each route
-   we've defined, so we can call the routes from app.js. */
 
 export {
     getHelloWorld,

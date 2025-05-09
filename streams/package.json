@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-  "type": "module",
   "scripts": {
     "start": "node app.js",
     "create_tables": "node ./models/create_tables.js"
@@ -16,8 +15,6 @@
     "@aws-sdk/credential-provider-ini": "3.734.0",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
-    "@langchain/community": "^0.3.36",
-    "@langchain/core": "^0.3.42",
     "@langchain/openai": "^0.4.7",
     "@mui/material": "^5.15.10",
     "axios": "^1.7.9",

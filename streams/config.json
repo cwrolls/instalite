@@ -2,7 +2,9 @@
     "database": {
       "host": "localhost",
       "port": "3306",
-      "database": "imdb_basic"
+      "database": "imdb_basic",
+      "user": "nets2120_hw2",
+      "password": "S25AgH15,"
     },
     "groupId": "nets-2120-JCPP",
     "bootstrapServers": ["localhost:9092"],

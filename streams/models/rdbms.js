@@ -5,13 +5,9 @@ import process from 'process';
 const configFile = fs.readFileSync('config.json', 'utf8');
 const config = JSON.parse(configFile);
 
-// Dotenv reads the .env file and makes the environment variables available
 import dotenv from 'dotenv';
 dotenv.config()
 
-/**
- * Implementation of a singleton pattern for database connections
- */
 
 var the_db = null;
 
@@ -41,64 +37,51 @@ class RelationalDB {
     }
 
     async connect() {
-        if (this.conn != null) 
+        try {
+            if (this.conn != null) 
+                return this;
+    
+            console.log('dbconfig:', JSON.stringify(this.dbconfig, null, 2));
+            console.log(`new connecting to the database ${this.dbconfig?.host}/${this.dbconfig?.database}/${this.dbconfig?.user}`);
+                        
+            const conn = await mysql.createConnection(this.dbconfig);
+                
+            if (this.conn == null) {
+                console.log("New connection used");
+                this.conn = conn;
+            } else {
+                console.log("New connection discarded");
+                await conn.end();
+            }
+    
+            console.log(`exit createConnection`);
             return this;
-
-        console.log("New connection request");
-        // Connect to MySQL
-        var conn = await mysql.createConnection(this.dbconfig);
-        if (this.conn == null) {
-            console.log("New connection used");
-            this.conn = conn;
-        } else {
-            console.log("New connection discarded");
-            conn.close();
+    
+        } catch (error) {
+            console.error("Error connecting to the database:", error);
+            throw error;
         }
-
-        return this;
     }
 
-    /**
-     * Gracefully close the database connection and deallocate the main object
-     */
     close() {
         this.conn.end();
         this.conn = null;
         the_db = null;
     }
 
-    /**
-     * Sends an SQL query to the database
-     * 
-     * @param {*} query 
-     * @param {*} params 
-     * @returns promise
-     */
+
     async send_sql(sql, params = []) {
         // console.log(sql, params);
         return this.conn.query(sql, params);
     }
 
 
-    /**
-     * Sends an SQL CREATE TABLES to the database
-     * 
-     * @param {*} query 
-     * @param {*} params 
-     * @returns promise
-     */
+
     async create_tables(query, params = []) {
         return this.send_sql(query, params);
     }
 
 
-    /**
-     * Executes an SQL INSERT request
-     * 
-     * @param {*} query 
-     * @param {*} params 
-     * @returns The number of rows inserted
-     */
     async insert_items(query, params = []) {
         var result = await this.send_sql(query, params);
 
@@ -106,20 +89,11 @@ class RelationalDB {
     }
 };
 
-/**
- * For mocking
- * 
- * @param {*} db 
- */
+
 function set_db_connection(db) {
     the_db = db;
 }
 
-/**
- * Get a connection to the MySQL database
- * 
- * @returns An SQL connection object or mock object
- */
 function get_db_connection() {
     if (the_db) {
         return the_db;

@@ -1,6 +1,3 @@
-///////////////
-// NETS 2120 Sample Kafka Client
-///////////////
 
 import express from 'express';
 import pkg from 'kafkajs';
@@ -10,7 +7,6 @@ import { get_db_connection } from './models/rdbms.js';
 const { Kafka, CompressionTypes, CompressionCodecs } = pkg;
 import SnappyCodec from 'kafkajs-snappy';
 
-// Add snappy codec to the CompressionCodecs.
 CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec;
 
 import fs from 'fs';
@@ -22,8 +18,37 @@ const config = JSON.parse(configFile);
 const app = express();
 app.use(express.json());
 
-// Database connection setup
 const db = get_db_connection();
+async function setupDatabaseConnection() {
+    let retries = 10;
+    let connected = false;
+
+    while (retries > 0 && !connected) {
+        try {
+            console.log(`Attempting to connect to database. Retries left: ${retries}`);
+            await db.connect();
+            connected = true;
+            console.log(`Successfully connected to the database ${db.dbconfig.host}`);
+        } catch (error) {
+            retries--;
+            console.error(`Failed to connect to database: ${error.message}`);
+            
+            if (retries === 0) {
+                console.error('Maximum retry attempts reached. Exiting application.');
+                process.exit(1);
+            }
+            
+            const delay = 3000;
+            console.log(`Retrying in ${delay/1000} seconds...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+}
+
+setupDatabaseConnection().catch(err => {
+    console.error('Fatal database connection error:', err);
+    process.exit(1);
+});
 
 async function queryDatabase(query, params = []) {
     await db.connect();
@@ -50,14 +75,6 @@ async function processfederatedMessage(message) {
 
     try {
         const {post_json,attach} = JSON.parse(message.value.toString());
-        
-        if (!post_json || !post_json.username || !post_json.post_text || !post_json.source_site 
-            || !post_json.post_uuid_within_site || !post_json.content_type) {
-            return res.status(400).json({ 
-                error: 'Required fields missing in post_json (username, source_site, post_text, post_uuid_within_site, content_type)' 
-            });
-            }
-
         const query = `
             INSERT INTO federated_posts (
                 username, 
@@ -86,7 +103,6 @@ async function processBlueskyMessage(message) {
     try {
         const data = JSON.parse(message.value.toString());
         
-        // Handle author data
         const authorQuery = `
             INSERT INTO Bluesky_authors (did, handle, display_name, avatar_url)
             VALUES (?, ?, ?, ?)
@@ -147,6 +163,9 @@ async function processKafkaMessage(topic, message) {
 }
 
 const run = async () => {
+    // Ensure the database connection is fully established
+    await setupDatabaseConnection();
+
     await Promise.all([
         consumer.connect(),
         producer.connect()

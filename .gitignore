@@ -9,4 +9,11 @@ aws.credentials
 **/classes/
 **/.DS_Store
 **/*.pem
-
+images/
+model/
+models/
+credentials
+**/*.venv
+**/venv
+backend/build
+basic-face-match_old/
